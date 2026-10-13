@@ -1,0 +1,6 @@
+{
+  "name": "PreJudge",
+  "description": "AI-assisted competitive-programming pre-submission checker. Test your code before the judge does.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
