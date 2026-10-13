@@ -1,4 +1,4 @@
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ais-pre-kz5r5lwd2wsk7dgmpmc3bz-136733511848.asia-southeast1.run.app';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || '';
 
 export default function robots() {
   return {
