@@ -10,11 +10,26 @@ services:
     environment:
       - PORT=3000
       - NODE_ENV=production
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - EXECUTION_SERVICE_URL=http://execution-service:8080
+      - EXECUTION_SERVICE_TOKEN=${EXECUTION_SERVICE_TOKEN:-dev_secret_token_123}
       - MONGODB_URI=mongodb://mongodb:27017/prejudge
       - MONGODB_DB_NAME=prejudge
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
     depends_on:
+      - execution-service
       - mongodb
+    restart: unless-stopped
+
+  execution-service:
+    build:
+      context: ./sandbox
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - NODE_ENV=production
+      - EXECUTION_SERVICE_TOKEN=${EXECUTION_SERVICE_TOKEN:-dev_secret_token_123}
     restart: unless-stopped
 
   mongodb:

@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: prejudge-execution-service
+    runtime: docker
+    dockerfilePath: ./sandbox/Dockerfile
+    dockerContext: ./sandbox
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: EXECUTION_SERVICE_TOKEN
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+      - key: SANDBOX_TMP_DIR
+        value: /tmp/prejudge_sandbox

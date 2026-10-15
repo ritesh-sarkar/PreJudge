@@ -211,6 +211,16 @@ To ensure zero token waste and cost efficiency:
 
 ---
 
-## 10. License
+## 10. Production Deployment (Vercel + Render)
+
+PreJudge is architected for dual-cloud deployment:
+- **Frontend & Orchestrator (Vercel)**: Next.js 15 UI, Monaco editor, Gemini reasoning, and test synthesis.
+- **Dedicated Execution Service (Render)**: Containerized Docker web service running in an isolated environment with native `g++`, `gcc`, `python3`, and `javac` compilers.
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for full instructions and configuration.
+
+---
+
+## 11. License
 
 MIT. Built for competitive programmers worldwide.

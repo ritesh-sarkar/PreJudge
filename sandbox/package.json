@@ -1,0 +1,23 @@
+{
+  "name": "prejudge-execution-service",
+  "version": "1.0.0",
+  "description": "PreJudge isolated code execution service for competitive programming",
+  "private": true,
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "sandbox",
+    "code-runner",
+    "prejudge",
+    "online-judge"
+  ],
+  "author": "PreJudge",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

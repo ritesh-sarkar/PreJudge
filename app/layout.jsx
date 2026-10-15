@@ -1,7 +1,9 @@
 import './globals.css';
 
-export const metadata = {
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ais-pre-kz5r5lwd2wsk7dgmpmc3bz-136733511848.asia-southeast1.run.app';
 
+export const metadata = {
+  metadataBase: new URL(APP_URL),
   title: {
     default: 'PreJudge — Test Your Code Before the Judge Does | AI CP Sandbox',
     template: '%s | PreJudge',
@@ -33,10 +35,12 @@ export const metadata = {
   },
   icons: {
     icon: [
-      { url: '/faveicon.ico', type: 'image/png' },
+      { url: '/logo.png', type: 'image/png' },
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' },
     ],
-    apple: '/favicon.ico',
-    shortcut: '/favicon.ico',
+    apple: '/logo.png',
+    shortcut: '/logo.png',
   },
   manifest: '/manifest.json',
   openGraph: {
@@ -80,11 +84,12 @@ export default function RootLayout({ children }) {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: 'PreJudge',
+    url: APP_URL,
     description: 'AI-assisted competitive programming pre-submission checker. Compiles and executes code in an isolated sandbox with edge-case analysis for Beecrowd and CP problems.',
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'All',
-    image: `OG.png`,
-    logo: `logo.png`,
+    image: `${APP_URL}/OG.png`,
+    logo: `${APP_URL}/logo.png`,
     author: {
       '@type': 'Person',
       name: 'Ritesh Sarkar',

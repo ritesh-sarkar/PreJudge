@@ -7,9 +7,100 @@ import {
 import { compareOutputs } from '../lib/comparison.js';
 
 /**
- * Orchestrates deterministic compilation and isolated execution of user code across multiple languages
+ * Executes code via remote dedicated execution service on Render when configured,
+ * or falls back to local execution engine for local development.
  */
 export async function executeInSandbox(analysisId, code, language, testSuite) {
+    const executionServiceUrl = process.env.EXECUTION_SERVICE_URL?.trim();
+
+    if (executionServiceUrl) {
+        try {
+            return await executeRemote(executionServiceUrl, analysisId, code, language, testSuite);
+        } catch (err) {
+            console.error('[ExecutionService] Remote execution failed:', err.message);
+            // In local development or if explicitly allowed, fall back to local execution
+            if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_LOCAL_FALLBACK === 'true') {
+                console.warn('[ExecutionService] Falling back to local execution engine...');
+                return await executeInLocalSandbox(analysisId, code, language, testSuite);
+            }
+
+            return {
+                status: 'sandbox_error',
+                compilation: {
+                    status: 'failed',
+                    compiler: 'Remote Execution Service',
+                    errors: `Execution service is unavailable: ${err.message}. Please verify the Render service is running.`,
+                    exitCode: -1,
+                },
+                execution: {
+                    totalTests: testSuite.length,
+                    passed: 0,
+                    failed: testSuite.length,
+                    totalTimeMs: 0,
+                    slowestTimeMs: 0,
+                },
+                tests: [],
+            };
+        }
+    }
+
+    return await executeInLocalSandbox(analysisId, code, language, testSuite);
+}
+
+/**
+ * Calls the dedicated Render code execution service
+ */
+async function executeRemote(serviceUrl, analysisId, code, language, testSuite) {
+    const url = `${serviceUrl.replace(/\/+$/, '')}/execute`;
+    const token = process.env.EXECUTION_SERVICE_TOKEN?.trim();
+
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const payload = {
+        analysisId,
+        language,
+        sourceCode: code,
+        tests: testSuite,
+        timeoutMs: 3000,
+    };
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(15000), // 15-second cap for cold starts/execution
+    });
+
+    if (!response.ok) {
+        let errorDetails = `HTTP ${response.status}`;
+        try {
+            const errData = await response.json();
+            if (errData?.error?.message) {
+                errorDetails += `: ${errData.error.message}`;
+            }
+        } catch {
+            // non-json response
+        }
+        throw new Error(`Remote execution service error: ${errorDetails}`);
+    }
+
+    const json = await response.json();
+    if (!json.success || !json.data) {
+        throw new Error(json?.error?.message || 'Invalid response from execution service');
+    }
+
+    return json.data;
+}
+
+/**
+ * Local sandbox execution (used in development or when no remote execution service is configured)
+ */
+async function executeInLocalSandbox(analysisId, code, language, testSuite) {
     let workDir = null;
 
     try {
@@ -87,8 +178,8 @@ export async function executeInSandbox(analysisId, code, language, testSuite) {
                 continue;
             }
 
-            // If test is marked for self-consistency runtime check
-            if (test.isSelfConsistency) {
+            // Self-consistency check
+            if (test.isSelfConsistency || !test.expected) {
                 if (run.stdout && run.stdout.trim() !== '') {
                     passedCount++;
                     testResults.push({
@@ -119,7 +210,7 @@ export async function executeInSandbox(analysisId, code, language, testSuite) {
                 continue;
             }
 
-            // Deterministic output comparison against online reference
+            // Output comparison
             const comparison = compareOutputs(run.stdout, test.expected);
 
             if (comparison.matched) {
