@@ -6,17 +6,8 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "node test.js"
+    "start": "node server.js"
   },
-  "keywords": [
-    "sandbox",
-    "code-runner",
-    "prejudge",
-    "online-judge"
-  ],
-  "author": "PreJudge",
-  "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
   }
