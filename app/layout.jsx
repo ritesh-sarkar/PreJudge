@@ -1,5 +1,6 @@
 
 import './globals.css';
+import { Analytics } from "@vercel/analytics/next"
 
 const APP_URL = (
   process.env.NEXT_PUBLIC_APP_URL ||
@@ -165,12 +166,15 @@ export default function RootLayout({ children }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: safeJsonLd }}
         />
+        {/* Google site verification meta tag */}
+        <meta name="google-site-verification" content="h0l0uTNeF1BayotC41QD2O8u_YxbLgnlc40D6QdTX2o" />
       </head>
 
       <body
         className="min-h-screen bg-[#07090e] text-slate-100 antialiased selection:bg-cyan-500/20 selection:text-cyan-200"
         suppressHydrationWarning
       >
+        <Analytics />
         {children}
       </body>
     </html>
