@@ -80,8 +80,11 @@ async function executeRemote(serviceUrl, analysisId, code, language, testSuite) 
         let errorDetails = `HTTP ${response.status}`;
         try {
             const errData = await response.json();
-            if (errData?.error?.message) {
-                errorDetails += `: ${errData.error.message}`;
+            const msg = typeof errData?.error === 'string'
+                ? errData.error
+                : errData?.error?.message || errData?.message;
+            if (msg) {
+                errorDetails += `: ${msg}`;
             }
         } catch {
             // non-json response
@@ -90,11 +93,20 @@ async function executeRemote(serviceUrl, analysisId, code, language, testSuite) 
     }
 
     const json = await response.json();
-    if (!json.success || !json.data) {
-        throw new Error(json?.error?.message || 'Invalid response from execution service');
+    if (!json.success) {
+        const errorMsg = typeof json?.error === 'string'
+            ? json.error
+            : json?.error?.message || json?.message || 'Remote execution failed';
+        throw new Error(errorMsg);
     }
 
-    return json.data;
+    // Accept both unwrapped response ({ success: true, status: ... }) and wrapped ({ success: true, data: { status: ... } })
+    const resultData = json.data || json;
+    if (!resultData.status) {
+        throw new Error('Invalid response structure from execution service');
+    }
+
+    return resultData;
 }
 
 /**
