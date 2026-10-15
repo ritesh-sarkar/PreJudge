@@ -1,128 +1,176 @@
+
 import './globals.css';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://ais-pre-kz5r5lwd2wsk7dgmpmc3bz-136733511848.asia-southeast1.run.app';
+const APP_URL = (
+  process.env.NEXT_PUBLIC_APP_URL ||
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000')
+).replace(/\/+$/, '');
+
+const SITE_NAME = 'PreJudge';
+const CREATOR_NAME = 'Ritesh Sarkar';
+const CREATOR_URL = 'https://ritesh-sarkar.vercel.app/';
+const DEFAULT_TITLE = 'PreJudge - Check Your Code Before You Submit';
+
+const DESCRIPTION =
+  'Check your competitive programming solutions before submission. PreJudge helps you test code, examine edge cases, and identify potential issues before the official judge.';
 
 export const metadata = {
   metadataBase: new URL(APP_URL),
+
   title: {
-    default: 'PreJudge — Test Your Code Before the Judge Does | AI CP Sandbox',
+    default: DEFAULT_TITLE,
     template: '%s | PreJudge',
   },
-  description: 'AI-assisted competitive programming pre-submission checker. Compile and execute C++, Python, and Java in an isolated sandbox with edge-case detection and algorithmic review before official Beecrowd and CP submissions.',
-  applicationName: 'PreJudge',
+
+  description: DESCRIPTION,
+
+  applicationName: SITE_NAME,
+  authors: [
+    {
+      name: CREATOR_NAME,
+      url: CREATOR_URL,
+    },
+  ],
+  creator: CREATOR_NAME,
+  publisher: SITE_NAME,
+  category: 'technology',
+
   keywords: [
     'PreJudge',
+    'competitive programming',
+    'code testing',
+    'online judge',
+    'pre-submission code checker',
+    'algorithm testing',
+    'edge case testing',
+    'programming problem solving',
     'Beecrowd',
-    'URI Online Judge',
-    'Competitive Programming',
-    'Online Judge Pre-tester',
-    'C++20 Sandbox',
-    'Python Algorithm Checker',
-    'Java CP Checker',
-    'Edge Case Generator',
-    'Wrong Answer Prevention',
-    'Time Limit Exceeded Debugger',
-    'Algorithm Analysis',
-    'Code Evaluation Sandbox',
-    'Ritesh Sarkar',
+    'C++ programming',
+    'Python programming',
+    'Java programming',
+    'JavaScript programming',
+    'code debugging',
+    'code validation',
+    'programming contest preparation',
+    'algorithm optimization',
+    'code quality assurance',
+    'programming challenge',
+    'code review',
+    'programming practice',
+    'competitive programming practice',
+    'programming problem analysis',
+    'code execution',
+    'code evaluation',
+    'programming problem testing',
+    'code correctness',
+    'programming problem solving skills',
+    'Ritesh Sarkar'
   ],
-  authors: [{ name: 'Ritesh Sarkar', url: 'https://ritesh-sarkar.vercel.app/' }],
-  creator: 'Ritesh Sarkar',
-  publisher: 'PreJudge',
-  category: 'Developer Tools',
+
   alternates: {
     canonical: '/',
   },
+
   icons: {
     icon: [
-      { url: '/logo.png', type: 'image/png' },
-      { url: '/favicon.png', type: 'image/png' },
       { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/logo.png', type: 'image/png' },
     ],
     apple: '/logo.png',
-    shortcut: '/logo.png',
   },
+
   manifest: '/manifest.json',
+
   openGraph: {
-    title: 'PreJudge — Test Your Code Before the Judge Does',
-    description: 'AI-assisted competitive programming pre-submission checker. Test code against edge cases and isolated sandbox execution before the official judge.',
-    url: '/',
-    siteName: 'PreJudge',
-    locale: 'en_US',
     type: 'website',
+    url: '/',
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
+    description: DESCRIPTION,
+    locale: 'en_US',
     images: [
       {
         url: '/OG.png',
         width: 1200,
         height: 630,
-        alt: 'PreJudge — Competitive Programming Pre-Submission Checker & Sandbox',
+        alt: 'PreJudge - Check your code before you submit',
       },
     ],
   },
+
   twitter: {
     card: 'summary_large_image',
-    title: 'PreJudge — Test Your Code Before the Judge Does',
-    description: 'AI-assisted competitive programming pre-submission checker. Run sandboxed C++, Python, and Java code against edge cases before the judge.',
+    title: DEFAULT_TITLE,
+    description: DESCRIPTION,
     images: ['/OG.png'],
     creator: '@riteshsarkar',
   },
+
   robots: {
     index: true,
     follow: true,
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
       'max-image-preview': 'large',
       'max-snippet': -1,
+      'max-video-preview': -1,
     },
   },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#07090e',
+  colorScheme: 'dark',
 };
 
 export default function RootLayout({ children }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'PreJudge',
+    name: SITE_NAME,
     url: APP_URL,
-    description: 'AI-assisted competitive programming pre-submission checker. Compiles and executes code in an isolated sandbox with edge-case analysis for Beecrowd and CP problems.',
+    description: DESCRIPTION,
     applicationCategory: 'DeveloperApplication',
-    operatingSystem: 'All',
+    operatingSystem: 'Any',
     image: `${APP_URL}/OG.png`,
-    logo: `${APP_URL}/logo.png`,
     author: {
       '@type': 'Person',
-      name: 'Ritesh Sarkar',
-      url: 'https://ritesh-sarkar.vercel.app/',
+      name: CREATOR_NAME,
+      url: CREATOR_URL,
     },
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-    },
-    featureList: [
-      'Isolated sandboxed code execution for C++20, Python 3, Java, and C',
-      'Automated edge-case test generation',
-      'AI algorithmic flaw and bottleneck analysis',
-      'Beecrowd problem resolution and test verification',
-    ],
   };
+
+  // Escape HTML-sensitive characters before embedding JSON-LD.
+  const safeJsonLd = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
 
   return (
     <html lang="en" className="dark scroll-smooth">
       <head>
-        <meta name="theme-color" content="#07090e" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <link rel="icon" href="/logo.png" type="image/png" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/logo.png" />
+        <link
+          rel="icon"
+          href="/logo.png"
+          type="image/png"
+        />
+        <link
+          rel="apple-touch-icon"
+          href="/logo.png"
+        />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd }}
         />
       </head>
-      <body className="min-h-screen bg-[#07090e] text-slate-100 antialiased selection:bg-cyan-500/20 selection:text-cyan-200" suppressHydrationWarning>
+
+      <body
+        className="min-h-screen bg-[#07090e] text-slate-100 antialiased selection:bg-cyan-500/20 selection:text-cyan-200"
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>
